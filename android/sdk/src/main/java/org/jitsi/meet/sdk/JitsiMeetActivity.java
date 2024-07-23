@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -85,6 +86,14 @@ public class JitsiMeetActivity extends AppCompatActivity
 
     // Overrides
     //
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Intent intent = new Intent("onConfigurationChanged");
+        intent.putExtra("newConfig", newConfig);
+        this.sendBroadcast(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,9 +176,9 @@ public class JitsiMeetActivity extends AppCompatActivity
         }
     }
 
-    public void leave() {
-        if (this.jitsiView  != null) {
-            this.jitsiView .leave();
+    protected void leave() {
+        if (this.jitsiView != null) {
+            this.jitsiView.leave();
         } else {
             JitsiMeetLogger.w("Cannot leave, view is null");
         }
@@ -213,7 +222,7 @@ public class JitsiMeetActivity extends AppCompatActivity
     protected void onConferenceJoined(HashMap<String, Object> extraData) {
         JitsiMeetLogger.i("Conference joined: " + extraData);
         // Launch the service for the ongoing notification.
-        JitsiMeetOngoingConferenceService.launch(this);
+        JitsiMeetOngoingConferenceService.launch(this, extraData);
     }
 
     protected void onConferenceTerminated(HashMap<String, Object> extraData) {
@@ -276,8 +285,8 @@ public class JitsiMeetActivity extends AppCompatActivity
 
     @Override
     protected void onUserLeaveHint() {
-        if (this.jitsiView  != null) {
-            this.jitsiView .enterPictureInPicture();
+        if (this.jitsiView != null) {
+            this.jitsiView.enterPictureInPicture();
         }
     }
 
